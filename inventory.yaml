@@ -1,0 +1,11 @@
+masters:
+  hosts:
+    master01:
+      ansible_host: 10.100.0.11
+
+workers:
+  hosts:
+    worker01:
+      ansible_host: 10.100.0.21
+    worker02:
+      ansible_host: 10.100.0.22

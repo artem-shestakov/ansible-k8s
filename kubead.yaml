@@ -1,0 +1,5 @@
+---
+- name: Bootstrapping clusters with kubeadm
+  hosts: "{{target | default('all')}}"
+  roles:
+    - containerd

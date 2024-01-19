@@ -1,0 +1,4 @@
+---
+containerd_version: '1.7.12'
+containerd_arch: amd64
+containerd_bin_dir: /usr/local

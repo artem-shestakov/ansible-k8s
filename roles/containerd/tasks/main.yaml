@@ -1,0 +1,31 @@
+---
+- name: Download containerd archive
+  ansible.builtin.get_url:
+    url: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/containerd-{{ containerd_version }}-linux-{{ containerd_arch }}.tar.gz
+    dest: /tmp/containerd-{{ containerd_version }}-linux-{{ containerd_arch }}.tar.gz
+    mode: '0440'
+
+- name: Containerd | Unpack containerd archive
+  ansible.builtin.unarchive:
+    src: /tmp/containerd-{{ containerd_version }}-linux-{{ containerd_arch }}.tar.gz
+    dest: "{{ containerd_bin_dir }}"
+    mode: '0755'
+    remote_src: true
+  become: true
+
+- name: Create systemd service
+  ansible.builtin.template:
+    src: containerd.service.j2
+    dest: /etc/systemd/system/containerd.service
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+
+- name: Make sure a service unit is running
+  ansible.builtin.systemd_service:
+    name: containerd
+    daemon_reload: yes
+    enabled: yes
+    state: started
+  become: true
