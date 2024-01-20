@@ -9,3 +9,8 @@ workers:
       ansible_host: 10.100.0.21
     worker02:
       ansible_host: 10.100.0.22
+
+k8s_cluster:
+  children:
+    masters:
+    workers:

@@ -25,7 +25,7 @@
 - name: Make sure a service unit is running
   ansible.builtin.systemd_service:
     name: containerd
-    daemon_reload: yes
-    enabled: yes
+    daemon_reload: true
+    enabled: true
     state: started
   become: true
