@@ -26,3 +26,15 @@
     - net.ipv4.ip_forward
     - net.bridge.bridge-nf-call-iptables
     - net.bridge.bridge-nf-call-ip6tables
+
+- name: Disable swap
+  command: swapoff -a
+
+- name: Disable SWAP in fstab
+  ansible.posix.mount:
+    name: "{{ item }}"
+    fstype: swap
+    state: absent
+  with_items: 
+    - swap
+    - none
