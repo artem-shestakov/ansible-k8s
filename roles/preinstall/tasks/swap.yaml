@@ -1,0 +1,12 @@
+---
+- name: Pre install | Disable swap
+  command: swapoff -a
+
+- name: Pre install | Disable SWAP in fstab
+  ansible.posix.mount:
+    name: "{{ item }}"
+    fstype: swap
+    state: absent
+  with_items: 
+    - swap
+    - none
