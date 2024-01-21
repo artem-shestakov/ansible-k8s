@@ -1,40 +1,14 @@
 ---
-- name: Copy module file
-  ansible.builtin.copy:
-    src: files/module_k8s.conf
-    dest: /etc/modules-load.d/k8s.conf
-    owner: root
-    group: root
-    mode: '0644'
+- name: Pre install | Setup for container runtimes
+  ansible.builtin.import_tasks: container_runtimes.yaml
 
-- name: Load modules module
-  community.general.modprobe:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - overlay
-    - br_netfilter
+- name: Pre install | Disable SWAP
+  ansible.builtin.import_tasks: swap.yaml
 
-- name: Setup sysctl
-  ansible.posix.sysctl:
-    name: "{{ item }}"
-    value: '1'
-    sysctl_set: true
-    state: present
-    reload: true
-  with_items:
-    - net.ipv4.ip_forward
-    - net.bridge.bridge-nf-call-iptables
-    - net.bridge.bridge-nf-call-ip6tables
-
-- name: Disable swap
-  command: swapoff -a
-
-- name: Disable SWAP in fstab
-  ansible.posix.mount:
-    name: "{{ item }}"
-    fstype: swap
-    state: absent
-  with_items: 
-    - swap
-    - none
+- name: Pre install | Check 6443 port
+  ansible.builtin.wait_for:
+    host: "{{ advertise_addr }}"
+    port: 6443
+    timeout: 5
+    state: stopped
+    msg: Port 6443 already in use
