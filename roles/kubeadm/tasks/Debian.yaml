@@ -1,0 +1,56 @@
+---
+- name: Kubeadm | Get kubectl stable release version
+  ansible.builtin.uri:
+    url: https://dl.k8s.io/release/stable.txt
+    return_content: true
+  when: kube_release is not defined
+  register: kube_stable_release
+
+- name: Update the apt package index and install packages needed
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gpg
+    update_cache: true
+
+- name: Check if /etc/apt/keyrings exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Get Kubeadm apt repository key.
+  ansible.builtin.get_url:
+    url: "https://pkgs.k8s.io/core:/stable:/{{ kube_stable_release.content | regex_replace('(^v\\d+.\\d+).\\d+$', '\\1') }}/deb/Release.key"
+    dest: /tmp/Release.key
+    mode: '0644'
+    force: true
+
+- name: Install repository key
+  command: gpg --dearmor --yes -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg /tmp/Release.key
+
+- name: Add Kubeadm apt repository.
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/{{ kube_stable_release.content | regex_replace('(^v\\d+.\\d+).\\d+$', '\\1') }}/deb/ /"
+    state: present
+
+- name: Install Kubeadm, Kubelet and Kubectl
+  ansible.builtin.apt:
+    name:
+      - kubelet
+      - kubeadm
+      - kubectl
+    update_cache: yes
+
+- name: Prevent packages from being upgraded
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  with_items: 
+    - kubelet
+    - kubeadm
+    - kubectl

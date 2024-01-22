@@ -1,3 +1,6 @@
 ---
-- name: Kubeadm | Install kubectl
-  ansible.builtin.import_tasks: kubectl.yaml
+- name: Kubeadm | Install with package manager
+  ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yaml"
+  when: 
+    - use_package_mgr is defined
+    - use_package_mgr
