@@ -22,6 +22,23 @@
     mode: '0644'
   become: true
 
+- name: Containerd | Check if /etc/containerd exists
+  ansible.builtin.file:
+    path: /etc/containerd
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Containerd | Create config.toml
+  ansible.builtin.template:
+    src: config.toml.j2
+    dest: /etc/containerd/config.toml
+    owner: root
+    group: root
+    mode: '0640'
+  notify: restart_containerd
+
 - name: Containerd | Make sure a service unit is running
   ansible.builtin.systemd_service:
     name: containerd
@@ -29,3 +46,9 @@
     enabled: true
     state: started
   become: true
+
+- name: Runc | Install runc
+  ansible.builtin.import_tasks: runc.yaml
+
+- name: Flush handlers
+  meta: flush_handlers

@@ -1,16 +1,17 @@
-masters:
+control_planes:
   hosts:
-    master01:
+    control_plane_01:
       ansible_host: 10.100.0.11
+      api_advertise_address: 10.100.0.11
 
 workers:
   hosts:
-    worker01:
+    worker_01:
       ansible_host: 10.100.0.21
-    worker02:
+    worker_02:
       ansible_host: 10.100.0.22
 
 k8s_cluster:
   children:
-    masters:
+    control_planes:
     workers:

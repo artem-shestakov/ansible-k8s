@@ -4,3 +4,6 @@
   when: 
     - use_package_mgr is defined
     - use_package_mgr
+
+- name: Kubeadm | Bootstrap cluster with Kubeadm
+  ansible.builtin.include_tasks: bootstrap.yaml

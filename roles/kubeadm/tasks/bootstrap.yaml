@@ -1,0 +1,29 @@
+---
+- name: debug
+  debug:
+    msg: "{{ cluster_endpoint | split(':') | first }} {{ api_advertise_address }}"
+- name: Bootstrap | Check if master more then one and endpoint address is equal advertise address
+  ansible.builtin.fail:
+    msg: Cluster endpoint address is equal to master address when number of master nodes more then one. Use DNS name or an IP address of a load-balancer.
+  when:
+    - (cluster_endpoint | split(':') | first) == api_advertise_address
+    - groups['control_planes'] | length > 1
+    - inventory_hostname in groups['masters']
+
+- name: Bootstrap | Create config file
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: config.yaml
+    owner: root
+    group: root
+    mode: '0400'
+  when: groups['control_planes'][0] == inventory_hostname
+
+# - name: Bootstrap | Initializing control-plane node
+#   ansible.builtin.command:
+#     cmd: kubeadm init --config config.yaml
+#   register: kubeadm_init
+
+# - name: debug
+#   debug:
+#     msg: "{{ kubeadm_init }}"
