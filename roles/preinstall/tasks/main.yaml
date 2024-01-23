@@ -5,10 +5,10 @@
 - name: Pre install | Disable SWAP
   ansible.builtin.import_tasks: swap.yaml
 
-- name: Pre install | Check 6443 port
+- name: Pre install | Check {{ bind_port }} port
   ansible.builtin.wait_for:
     host: "{{ advertise_addr }}"
-    port: 6443
+    port: "{{ bind_port }}"
     timeout: 5
     state: stopped
     msg: Port 6443 already in use
