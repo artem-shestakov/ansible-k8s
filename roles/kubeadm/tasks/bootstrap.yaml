@@ -19,11 +19,13 @@
     mode: '0400'
   when: groups['control_planes'][0] == inventory_hostname
 
-# - name: Bootstrap | Initializing control-plane node
-#   ansible.builtin.command:
-#     cmd: kubeadm init --config config.yaml
-#   register: kubeadm_init
+- name: Bootstrap | Initializing control-plane node
+  ansible.builtin.command:
+    cmd: kubeadm init --config config.yaml
+  register: kubeadm_init
+  when: groups['control_planes'][0] == inventory_hostname
 
-# - name: debug
-#   debug:
-#     msg: "{{ kubeadm_init }}"
+- name: debug
+  debug:
+    msg: "{{ kubeadm_init }}"
+  when: groups['control_planes'][0] == inventory_hostname

@@ -62,7 +62,7 @@ version = 2
     max_container_log_line_size = 16384
     netns_mounts_under_state_dir = false
     restrict_oom_score_adj = false
-    sandbox_image = "registry.k8s.io/pause:3.8"
+    sandbox_image = "registry.k8s.io/pause:3.9"
     selinux_category_range = 1024
     stats_collect_period = 10
     stream_idle_timeout = "4h0m0s"
@@ -124,7 +124,7 @@ version = 2
           snapshotter = ""
 
           [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
-            BinaryName = ""
+            BinaryName = "/usr/local/bin/runc"
             CriuImagePath = ""
             CriuPath = ""
             CriuWorkPath = ""
@@ -134,7 +134,7 @@ version = 2
             NoPivotRoot = false
             Root = ""
             ShimCgroup = ""
-            SystemdCgroup = false
+            SystemdCgroup = {% if containerd_systemd_cgroup %}true{% else %}false{% endif %}
 
       [plugins."io.containerd.grpc.v1.cri".containerd.untrusted_workload_runtime]
         base_runtime_spec = ""
