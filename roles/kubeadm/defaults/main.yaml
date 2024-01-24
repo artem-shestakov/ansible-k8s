@@ -5,6 +5,9 @@ api_advertise_address: "{{ ansible_default_ipv4.address }}"
 bind_port: 6443
 cluster_endpoint: "{{ api_advertise_address }}:{{ bind_port }}"
 dns_domain: cluster.local
-pod_network_cidr: "10.96.0.0/12"
+pod_network_cidr: "192.168.0.0/16"
+service_network_cidr: "10.96.0.0/12"
 cert_extra_sans:
-  - "{{ api_advertise_address }}"
+  - "{{ cluster_endpoint | split(':') | first }}"
+
+kubelet_cgroup_driver: "{{ 'systemd' if containerd_systemd_cgroup else 'cgroupfs' }}"

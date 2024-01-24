@@ -22,6 +22,12 @@
     mode: '0644'
   become: true
 
+# - name: Containerd | Install from repository
+#   ansible.builtin.apt:
+#     name:
+#       - containerd
+#     update_cache: yes
+
 - name: Containerd | Check if /etc/containerd exists
   ansible.builtin.file:
     path: /etc/containerd
@@ -39,6 +45,9 @@
     mode: '0640'
   notify: restart_containerd
 
+- name: Flush handlers
+  meta: flush_handlers
+
 - name: Containerd | Make sure a service unit is running
   ansible.builtin.systemd_service:
     name: containerd
@@ -49,6 +58,3 @@
 
 - name: Runc | Install runc
   ansible.builtin.import_tasks: runc.yaml
-
-- name: Flush handlers
-  meta: flush_handlers
