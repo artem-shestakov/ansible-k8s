@@ -1,0 +1,35 @@
+---
+- name: Join | Create token
+  ansible.builtin.command:
+    cmd: kubeadm token create --ttl 1h
+  register: kube_token
+  when: groups['control_planes'][0] == inventory_hostname
+  failed_when: kube_token.rc != 0
+  tags: join
+
+- name: Join | Get private key information
+  ansible.builtin.shell:
+    cmd: >-
+      openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt
+      | openssl rsa -pubin -outform der 2>/dev/null
+      | openssl dgst -sha256 -hex | sed 's/^.* //'
+  register: ca_cert_hash
+  when: groups['control_planes'][0] == inventory_hostname
+  failed_when: ca_cert_hash.rc != 0
+  tags: join
+
+- name: Bla bla bla
+  ansible.builtin.set_fact:
+    kubeadm_token: "{{ kube_token.stdout }}"
+    discovery_token: "{{ ca_cert_hash.stdout }}"
+  when: groups['control_planes'][0] == inventory_hostname
+  tags: join 
+
+- name: Join | Join worker node
+  ansible.builtin.shell: 
+    cmd: >- 
+      kubeadm join --token {{ hostvars[groups['control_planes'][0]]['kubeadm_token'] }} {{ api_advertise_address }}:{{ bind_port }} --discovery-token-ca-cert-hash sha256:{{ hostvars[groups['control_planes'][0]]['discovery_token'] }}
+  register: ca_cert_hash
+  when: inventory_hostname in groups['workers']
+  failed_when: ca_cert_hash.rc != 0
+  tags: join

@@ -7,3 +7,7 @@
 
 - name: Kubeadm | Bootstrap cluster with Kubeadm
   ansible.builtin.include_tasks: bootstrap.yaml
+
+- name: Join | Join nodes
+  ansible.builtin.include_tasks: join.yaml
+  tags: join
