@@ -24,6 +24,7 @@
     cmd: kubeadm init --config config.yaml
   register: kubeadm_init
   when: groups['control_planes'][0] == inventory_hostname
+  failed_when: kubeadm_init.rc != 0
 
 - name: debug
   debug:
