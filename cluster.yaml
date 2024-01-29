@@ -6,3 +6,4 @@
     - preinstall
     - containerd
     - kubeadm
+    - calico
