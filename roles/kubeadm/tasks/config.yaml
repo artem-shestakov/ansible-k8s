@@ -1,0 +1,32 @@
+---
+- name: Config | Setup kubectl config on master node
+  when: groups['control_planes'][0] == inventory_hostname
+  tags: config
+  block:
+    - name: Config | Create .kube directory
+      ansible.builtin.file:
+        path: "/home/{{ ansible_user }}/.kube"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0700'
+
+    - name: Config | Copy kubectl config file
+      ansible.builtin.copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "/home/{{ ansible_user }}/.kube/config"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0600'
+        remote_src: true
+
+- name: Config | Copy config to ansible host
+  ansible.builtin.fetch:
+    src: /etc/kubernetes/admin.conf
+    dest: "./.kube/config"
+    flat: true
+  #   mode: '0600'
+  #   remote_src: true
+  # delegate_to: localhost
+  when: groups['control_planes'][0] == inventory_hostname
+  tags: config

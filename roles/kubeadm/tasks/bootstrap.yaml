@@ -1,7 +1,4 @@
 ---
-- name: debug
-  debug:
-    msg: "{{ cluster_endpoint | split(':') | first }} {{ api_advertise_address }}"
 - name: Bootstrap | Check if master more then one and endpoint address is equal advertise address
   ansible.builtin.fail:
     msg: Cluster endpoint address is equal to master address when number of master nodes more then one. Use DNS name or an IP address of a load-balancer.
@@ -26,7 +23,3 @@
   when: groups['control_planes'][0] == inventory_hostname
   failed_when: kubeadm_init.rc != 0
 
-- name: debug
-  debug:
-    msg: "{{ kubeadm_init }}"
-  when: groups['control_planes'][0] == inventory_hostname
