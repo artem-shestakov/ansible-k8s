@@ -1,5 +1,5 @@
 # Ansible Kubernetes
-Simple collection to install Kubernetes cluster
+Collection to install simple Kubernetes cluster
 
 ## Variables
 | Name | Description | Default |
