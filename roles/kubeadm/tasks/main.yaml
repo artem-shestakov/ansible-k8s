@@ -11,3 +11,7 @@
 - name: Join | Join nodes
   ansible.builtin.include_tasks: join.yaml
   tags: join
+
+- name: Config | Setup kubectl
+  ansible.builtin.include_tasks: config.yaml
+  tags: config
